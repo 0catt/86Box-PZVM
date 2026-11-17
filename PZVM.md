@@ -25,6 +25,10 @@ The VNC renderer also sets `mouse_automation` while it is active, so the emulate
 mouse accepts VNC pointer input without the (hidden) window capturing the host mouse.
 Upstream 86Box drops VNC mouse input unless the window has captured the mouse.
 
+Resolution changes are sent to VNC clients (DesktopSize): the Qt interface never calls
+`vnc_resize`, so the renderer now calls it itself when a blit has a new size. Also fixed
+`vnc_resize` limiting the height with the width.
+
 Build changes:
 
 - `qt_downloader.cpp` is only built together with the update checker, so builds

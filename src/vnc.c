@@ -14,7 +14,8 @@
  *          Copyright 2017-2019 Fred N. van Kempen.
  *
  *          Modified for PZVM, 2026-11-17: configurable port, optional loopback-only listening,
- *          mouse input accepted without host mouse capture.
+ *          mouse input accepted without host mouse capture, resolution changes sent to
+ *          clients.
  */
 #include <stdarg.h>
 #include <stdio.h>
@@ -185,6 +186,9 @@ vnc_blit(int x, int y, int w, int h, int monitor_index)
         return;
     }
 
+    if ((w != rfb->width) || (h != rfb->height))
+        vnc_resize(w, h);
+
     for (int row = 0; row < h; ++row)
         video_copy(&(((uint8_t *) rfb->frameBuffer)[row * 2048 * sizeof(uint32_t)]), &(buffer32->line[y + row][x]), w * sizeof(uint32_t));
 
@@ -303,7 +307,7 @@ vnc_resize(int x, int y)
         vnc_log("VNC: updating resolution: %dx%d\n", x, y);
 
         allowedX = (rfb->width < x) ? rfb->width : x;
-        allowedY = (rfb->width < y) ? rfb->width : y;
+        allowedY = (rfb->height < y) ? rfb->height : y;
 
         rfb->width  = x;
         rfb->height = y;
