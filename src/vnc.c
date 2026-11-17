@@ -15,7 +15,7 @@
  *
  *          Modified for PZVM, 2026-11-17: configurable port, optional loopback-only listening,
  *          mouse input accepted without host mouse capture, resolution changes sent to
- *          clients.
+ *          clients, QEMU-style relative pointer mode (pseudo-encoding -257).
  */
 #include <stdarg.h>
 #include <stdio.h>
@@ -40,6 +40,9 @@
 #define VNC_MAX_X 2048
 #define VNC_MIN_Y 200
 #define VNC_MAX_Y 2048
+
+#define VNC_ENCODING_POINTER_TYPE_CHANGE -257
+#define VNC_RELATIVE_CENTRE              0x7fff
 
 static rfbScreenInfoPtr rfb = NULL;
 static int              clients;
@@ -95,6 +98,11 @@ vnc_ptrevent(int but, int x, int y, rfbClientPtr cl)
     mouse_set_buttons_ex(b);
     ptr_but = but;
 
+    if (cl->clientData != NULL) {
+        mouse_scale(x - VNC_RELATIVE_CENTRE, y - VNC_RELATIVE_CENTRE);
+        return;
+    }
+
     dx = (x - ptr_x) / 0.96; /* TODO: Figure out the correct scale factor for X and Y. */
     dy = (y - ptr_y) / 0.96;
 
@@ -114,6 +122,23 @@ vnc_ptrevent(int but, int x, int y, rfbClientPtr cl)
 
     rfbDefaultPtrAddEvent(but, x, y, cl);
 }
+
+static rfbBool
+vnc_enable_pseudo(rfbClientPtr cl, UNUSED(void **data), int encoding)
+{
+    if (encoding != VNC_ENCODING_POINTER_TYPE_CHANGE)
+        return FALSE;
+
+    cl->clientData = cl;
+    return TRUE;
+}
+
+static int vnc_pseudo_encodings[] = { VNC_ENCODING_POINTER_TYPE_CHANGE, 0 };
+
+static rfbProtocolExtension vnc_extension = {
+    .pseudoEncodings      = vnc_pseudo_encodings,
+    .enablePseudoEncoding = vnc_enable_pseudo
+};
 
 static void
 vnc_clientgone(UNUSED(rfbClientPtr cl))
@@ -248,6 +273,12 @@ vnc_init(UNUSED(void *arg))
         if (vnc_local_only) {
             rfbStringToAddr("127.0.0.1", &rfb->listenInterface);
             rfb->listen6Interface = "::1";
+        }
+
+        static int extension_registered = 0;
+        if (!extension_registered) {
+            rfbRegisterProtocolExtension(&vnc_extension);
+            extension_registered = 1;
         }
 
         rfbInitServer(rfb);

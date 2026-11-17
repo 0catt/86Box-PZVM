@@ -29,6 +29,12 @@ Resolution changes are sent to VNC clients (DesktopSize): the Qt interface never
 `vnc_resize`, so the renderer now calls it itself when a blit has a new size. Also fixed
 `vnc_resize` limiting the height with the width.
 
+QEMU-style relative pointer mode: a client that asks for pseudo-encoding -257 (QEMU's
+"pointer type change") gets its pointer messages read as movements around 0x7FFF
+(x - 0x7FFF, y - 0x7FFF) instead of absolute positions, so a client that captures the
+host mouse (like PZVM) moves the guest pointer exactly. Other clients keep the absolute
+behaviour. No acknowledgement rectangle is sent back.
+
 Build changes:
 
 - `qt_downloader.cpp` is only built together with the update checker, so builds
