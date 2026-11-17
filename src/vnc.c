@@ -12,6 +12,8 @@
  *          Based on raw code by RichardG, <richardg867@gmail.com>
  *
  *          Copyright 2017-2019 Fred N. van Kempen.
+ *
+ *          Modified for PZVM, 2026-11-17: configurable port, optional loopback-only listening.
  */
 #include <stdarg.h>
 #include <stdio.h>
@@ -234,6 +236,13 @@ vnc_init(UNUSED(void *arg))
         /* Set up our current resolution. */
         rfb->width  = allowedX;
         rfb->height = allowedY;
+
+        rfb->port     = vnc_port;
+        rfb->ipv6port = vnc_port;
+        if (vnc_local_only) {
+            rfbStringToAddr("127.0.0.1", &rfb->listenInterface);
+            rfb->listen6Interface = "::1";
+        }
 
         rfbInitServer(rfb);
 

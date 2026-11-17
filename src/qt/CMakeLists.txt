@@ -13,6 +13,8 @@
 #
 #          Copyright 2020-2021 David Hrdlička.
 #          Copyright 2024      Jasmine Iwanek.
+#
+# Modified for PZVM, 2026-11-17: downloader built only with the update checker.
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -282,9 +284,6 @@ add_library(ui STATIC
     qt_mediahistorymanager.cpp
     qt_mediahistorymanager.hpp
 
-    qt_downloader.cpp
-    qt_downloader.hpp
-
     qt_vmmanager_clientsocket.cpp
     qt_vmmanager_clientsocket.hpp
     qt_vmmanager_serversocket.cpp
@@ -368,6 +367,8 @@ target_include_directories(ui PRIVATE ${OSD_DIR} ${OSD_DIR}/imgui)
 if(EMU_BUILD_NUM)
     add_compile_definitions(UPDATE_CHECK)
     target_sources(ui PRIVATE
+        qt_downloader.cpp
+        qt_downloader.hpp
         qt_updatecheck.cpp
         qt_updatecheck.hpp
         qt_updatecheckdialog.cpp

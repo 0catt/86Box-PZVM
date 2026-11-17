@@ -25,6 +25,8 @@
  * NOTE:    Forcing config files to be in Unicode encoding breaks
  *          it on Windows XP, and possibly also Vista. Use the
  *          -DANSI_CFG for use on these systems.
+ *
+ *          Modified for PZVM, 2026-11-17: load and save of vnc_port, vnc_local_only, vnc_hide_window.
  */
 
 #ifdef _WIN32
@@ -362,6 +364,12 @@ load_general(void)
     vid_api = plat_vidapi(p);
     if (!strcmp(p, "default"))
         ini_section_delete_var(cat, "vid_api");
+
+    vnc_port = ini_section_get_int(cat, "vnc_port", 5900);
+    if ((vnc_port < 1) || (vnc_port > 65535))
+        vnc_port = 5900;
+    vnc_local_only = !!ini_section_get_int(cat, "vnc_local_only", 0);
+    vnc_hide_window = !!ini_section_get_int(cat, "vnc_hide_window", 0);
 
     video_fullscreen_scale = ini_section_get_int(cat, "video_fullscreen_scale", 1);
 
@@ -3480,6 +3488,21 @@ save_general(void)
         ini_section_delete_var(cat, "vid_renderer");
     else
         ini_section_set_string(cat, "vid_renderer", va_name);
+
+    if (vnc_port == 5900)
+        ini_section_delete_var(cat, "vnc_port");
+    else
+        ini_section_set_int(cat, "vnc_port", vnc_port);
+
+    if (vnc_local_only == 0)
+        ini_section_delete_var(cat, "vnc_local_only");
+    else
+        ini_section_set_int(cat, "vnc_local_only", vnc_local_only);
+
+    if (vnc_hide_window == 0)
+        ini_section_delete_var(cat, "vnc_hide_window");
+    else
+        ini_section_set_int(cat, "vnc_hide_window", vnc_hide_window);
 
     if (video_fullscreen_scale == 1)
         ini_section_delete_var(cat, "video_fullscreen_scale");

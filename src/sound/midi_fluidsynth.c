@@ -1,4 +1,5 @@
 /* some code borrowed from scummvm */
+/* Modified for PZVM, 2026-11-17: readline stand-ins for static builds. */
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -28,6 +29,19 @@
 #endif
 
 extern void al_set_midi(int freq, int buf_size);
+
+#ifdef FLUIDSYNTH_NO_READLINE
+char *
+readline(UNUSED(const char *prompt))
+{
+    return NULL;
+}
+
+void
+add_history(UNUSED(const char *line))
+{
+}
+#endif
 
 typedef struct fluidsynth {
     fluid_settings_t *settings;

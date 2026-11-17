@@ -14,6 +14,8 @@
 #          Copyright 2020-2021 David Hrdlička.
 #          Copyright 2024-2026 Jasmine Iwanek.
 #
+# Modified for PZVM, 2026-11-17: static FluidSynth linked without readline.
+#
 
 add_library(snd OBJECT
     sound.c
@@ -169,6 +171,10 @@ if(FLUIDSYNTH)
     pkg_check_modules(FLUIDSYNTH REQUIRED IMPORTED_TARGET fluidsynth)
     target_link_libraries(86Box PkgConfig::FLUIDSYNTH)
     if(STATIC_BUILD)
+        if("readline" IN_LIST FLUIDSYNTH_STATIC_LIBRARIES)
+            list(REMOVE_ITEM FLUIDSYNTH_STATIC_LIBRARIES readline termcap)
+            target_compile_definitions(snd PRIVATE FLUIDSYNTH_NO_READLINE)
+        endif()
         target_link_libraries(86Box -static ${FLUIDSYNTH_STATIC_LIBRARIES} -fopenmp)
         if(WIN32)
             add_compile_definitions(FLUIDSYNTH_NOT_A_DLL)

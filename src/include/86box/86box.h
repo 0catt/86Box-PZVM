@@ -16,6 +16,8 @@
  *          Copyright 2017-2020 Fred N. van Kempen.
  *          Copyright 2021 Laci bá'
  *          Copyright 2021-2025 Jasmine Iwanek.
+ *
+ *          Modified for PZVM, 2026-11-17: VNC port, loopback and hidden-window settings.
  */
 #ifndef EMU_86BOX_H
 #define EMU_86BOX_H
@@ -180,6 +182,9 @@ extern int      lang_id;                    /* (G) language id */
 extern int      scale;                      /* (C) screen scale factor */
 extern int      dpi_scale;                  /* (C) DPI scaling of the emulated screen */
 extern int      vid_api;                    /* (C) video renderer */
+extern int      vnc_port;                   /* (C) VNC port */
+extern int      vnc_local_only;             /* (C) VNC on loopback only */
+extern int      vnc_hide_window;            /* (C) no window with VNC */
 extern int      vid_cga_contrast;           /* (C) video */
 extern int      vid_cga_comp_brightness;    /* (C) CGA composite brightness */
 extern int      vid_cga_comp_sharpness;     /* (C) CGA composite sharpness */

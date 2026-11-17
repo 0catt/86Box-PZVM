@@ -15,6 +15,8 @@
  *          Copyright 2021 Joakim L. Gilje
  *          Copyright 2021-2022 Cacodemon345
  *          Copyright 2021-2022 Teemu Korhonen
+ *
+ *          Modified for PZVM, 2026-11-17: main window not shown when vnc_hide_window is set.
  */
 #include <QApplication>
 #include <QSurfaceFormat>
@@ -737,6 +739,11 @@ main(int argc, char *argv[])
 #endif
 
     main_window = new MainWindow();
+#ifdef USE_VNC
+    if ((vid_api == RENDERER_VNC) && vnc_hide_window) {
+        (void) main_window->winId();
+    } else
+#endif
     if (startMaximized) {
         main_window->showMaximized();
     } else {

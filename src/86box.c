@@ -20,6 +20,8 @@
  *          Copyright 2021      dob205
  *          Copyright 2021      Andreas J. Reichel.
  *          Copyright 2021-2026 Jasmine Iwanek.
+ *
+ *          Modified for PZVM, 2026-11-17: VNC port, loopback and hidden-window settings.
  */
 #include <inttypes.h>
 #include <stdarg.h>
@@ -166,6 +168,9 @@ int      scale                                  = 0;              /* (C) screen 
 int      dpi_scale                              = 0;              /* (C) DPI scaling of the emulated
                                                                          screen */
 int      vid_api                                = 0;              /* (C) video renderer */
+int      vnc_port                               = 5900;           /* (C) VNC port */
+int      vnc_local_only                         = 0;              /* (C) VNC on loopback only */
+int      vnc_hide_window                        = 0;              /* (C) no window with VNC */
 int      vid_cga_contrast                       = 0;              /* (C) video */
 int      video_fullscreen                       = 0;              /* (C) video */
 int      video_fullscreen_scale                 = 0;              /* (C) video */
