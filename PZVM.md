@@ -21,6 +21,10 @@ New settings in the `[General]` section of a VM's `86box.cfg`, used with
 | `vnc_local_only` | `0` | `1` listens on 127.0.0.1 and ::1 only |
 | `vnc_hide_window` | `0` | `1` never shows the main window |
 
+The VNC renderer also sets `mouse_automation` while it is active, so the emulated
+mouse accepts VNC pointer input without the (hidden) window capturing the host mouse.
+Upstream 86Box drops VNC mouse input unless the window has captured the mouse.
+
 Build changes:
 
 - `qt_downloader.cpp` is only built together with the update checker, so builds

@@ -13,7 +13,8 @@
  *
  *          Copyright 2017-2019 Fred N. van Kempen.
  *
- *          Modified for PZVM, 2026-11-17: configurable port, optional loopback-only listening.
+ *          Modified for PZVM, 2026-11-17: configurable port, optional loopback-only listening,
+ *          mouse input accepted without host mouse capture.
  */
 #include <stdarg.h>
 #include <stdio.h>
@@ -47,6 +48,7 @@ static int              allowedY;
 static int              ptr_x;
 static int              ptr_y;
 static int              ptr_but;
+static int              saved_mouse_automation;
 
 #ifdef ENABLE_VNC_LOG
 int vnc_do_log = ENABLE_VNC_LOG;
@@ -252,6 +254,9 @@ vnc_init(UNUSED(void *arg))
     /* Set up our BLIT handlers. */
     video_setblit(vnc_blit);
 
+    saved_mouse_automation = mouse_automation;
+    mouse_automation       = 1;
+
     clients = 0;
 
     vnc_log("VNC: init complete.\n");
@@ -263,6 +268,8 @@ void
 vnc_close(void)
 {
     video_setblit(NULL);
+
+    mouse_automation = saved_mouse_automation;
 
     if (rfb != NULL) {
         free(rfb->frameBuffer);
